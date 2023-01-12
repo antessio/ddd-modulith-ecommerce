@@ -4,54 +4,41 @@ import java.util.List;
 import java.util.UUID;
 
 public final class OrderEvent {
-    private final String id;
-    private final String shippingAddress;
-    private final List<OrderEventItem> items;
+    private String id;
+    private String shippingAddress;
+    private List<OrderEventItem> items;
+    private String paymentId;
+    private String user;
 
-    private final String paymentId;
+    public OrderEvent() {
+    }
 
-    private OrderEvent(String id, String shippingAddress, List<OrderEventItem> items, String paymentId) {
+    public OrderEvent(String id, String shippingAddress, List<OrderEventItem> items, String paymentId, String user) {
         this.id = id;
         this.shippingAddress = shippingAddress;
         this.items = items;
         this.paymentId = paymentId;
-    }
-
-    public static OrderEvent of(String id, String shippingAddress, List<OrderEventItem> items, String paymentId) {
-        return new OrderEvent(id, shippingAddress, items, paymentId);
+        this.user = user;
     }
 
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public String getShippingAddress() {
-        return this.shippingAddress;
+        return shippingAddress;
     }
 
     public List<OrderEventItem> getItems() {
-        return this.items;
+        return items;
     }
 
     public String getPaymentId() {
-        return this.paymentId;
+        return paymentId;
     }
 
-    public OrderEvent withId(String id) {
-        return of(id, getShippingAddress(), getItems(), getPaymentId());
+    public String getUser() {
+        return user;
     }
-
-    public OrderEvent withShippingAddress(String shippingAddress) {
-        return of(getId(), shippingAddress, getItems(), getPaymentId());
-    }
-
-    public OrderEvent withItems(List<OrderEventItem> items) {
-        return of(getId(), getShippingAddress(), items, getPaymentId());
-    }
-
-    public OrderEvent withPaymentId(String paymentId) {
-        return of(getId(), getShippingAddress(), getItems(), paymentId);
-    }
-
 
 }

@@ -3,11 +3,11 @@ package antessio.dddmodulith.ecommerce.order;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import antessio.dddmodulith.ecommerce.common.CommonService;
+import antessio.dddmodulith.ecommerce.common.DomainService;
 import antessio.dddmodulith.ecommerce.common.MessageBroker;
 import antessio.dddmodulith.ecommerce.common.SerializationService;
 
-public class OrderService extends CommonService<Order> {
+class OrderService extends DomainService<Order> {
 
     private final OrderRepository orderRepository;
 
@@ -26,12 +26,48 @@ public class OrderService extends CommonService<Order> {
     public String createOrder(CreateOrderCommand command) {
         Order order = Order.of(
                 command.getShippingAddress(),
-                command.getItems(),
-                command.getPaymentId());
+                command.getItems()
+                       .stream()
+                       .map(i -> Item.of(
+                               i.getProductId(),
+                               i.getPriceAmountUnit(),
+                               i.getDescription(),
+                               i.getQuantity()))
+                       .collect(Collectors.toList()),
+                command.getPaymentId(),
+                null,
+                null,
+                command.getUser());
         saveAndNotify(order, "order-created");
         return order.getId();
     }
 
+    public void payOrder(PayOrderCommand command) {
+        this.getOrder(command.getOrderId())
+            .map(o -> o.withPaymentId(command.getPaymentId()))
+            .map(o -> saveAndNotify(o, "order-payed"))
+            .orElseThrow(() -> new IllegalArgumentException("order not found"));
+
+    }
+
+    public void updateShippingInfo(
+            String orderId,
+            String shippingId,
+            String shippingStatus) {
+        this.getOrder(orderId)
+            .map(o -> o.withShippingId(shippingId).withShippingStatus(shippingStatus))
+            .map(o -> saveAndNotify(o, getEventTypeFromShippingStatus(shippingStatus)))
+            .orElseThrow(() -> new IllegalArgumentException("order not found"));
+
+    }
+
+    private static String getEventTypeFromShippingStatus(String shippingStats) {
+        if (shippingStats.equals("delivered")) {
+            return "order-completed";
+        } else {
+            return "shipping-updated";
+        }
+    }
 
     @Override
     protected Order save(Order obj) {
@@ -45,14 +81,16 @@ public class OrderService extends CommonService<Order> {
     }
 
     private OrderEvent orderToEvent(Order order) {
-        return OrderEvent.of(
+        return new OrderEvent(
                 order.getId(),
                 order.getShippingAddress(),
                 order.getItems()
                      .stream()
-                     .map(i -> OrderEventItem.of(i.getProductId(), i.getPriceAmountUnit(), i.getDescription()))
+                     .map(i -> new OrderEventItem(i.getProductId(), i.getPriceAmountUnit(), i.getDescription(), i.getQuantity()))
                      .collect(Collectors.toList()),
-                order.getPaymentId());
+                order.getPaymentId(),
+                order.getUsername()
+        );
     }
 
 

@@ -17,6 +17,12 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.5</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit-jupiter.version}</version>
@@ -48,6 +54,7 @@
         <module>payment-domain</module>
         <module>application</module>
         <module>common</module>
+        <module>notification</module>
     </modules>
 
 </project>

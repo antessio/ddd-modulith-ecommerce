@@ -1,0 +1,80 @@
+@startuml
+
+actor user
+participant order as o
+participant payment as py
+participant product as p
+participant shipping as s
+participant notification as n
+
+
+user->o: create
+o-->p: order created
+o-->n: order created
+activate p
+p->p: update product stocks
+deactivate p
+activate n
+n-->user: email
+deactivate n
+o->user: order
+
+
+user->py: create
+py->py: create fund lock
+py->user: payment
+
+user->o: pay order
+o-->s: order payed
+activate s
+o-->n: order payed
+activate n
+n-->user: email
+deactivate n
+o-->py: order payed
+activate py
+o->user: order
+
+py->py: update payment fund lock
+deactivate py
+s->s: create shipping
+s-->o: shipping created
+deactivate s
+activate o
+o->o: update tracking
+o-->n: tracking updated
+deactivate o
+activate n
+n-->user: email
+deactivate n
+
+...
+
+s->s: update shipping in-delivery
+s-->o: shipping in delivery
+activate o
+o->o: update tracking
+o-->n: tracking update
+deactivate o
+activate n
+n-->user: email
+deactivate n
+
+...
+
+s->s: update shipping delivered
+s-->o: shipping delivered
+activate o
+o->o: update tracking
+o->o: update order closed
+o-->n: order closed
+deactivate o
+
+activate n
+n-->user: email
+deactivate n
+
+
+
+
+@enduml

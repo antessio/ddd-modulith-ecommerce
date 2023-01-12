@@ -1,14 +1,12 @@
 package antessio.dddmodulith.ecommerce.common;
 
-import antessio.dddmodulith.ecommerce.order.OrderEvent;
-
-public abstract class CommonService <T> {
+public abstract class DomainService<T> {
 
     private final SerializationService serializationService;
     private final MessageBroker messageBroker;
 
 
-    public CommonService(SerializationService serializationService, MessageBroker messageBroker) {
+    public DomainService(SerializationService serializationService, MessageBroker messageBroker) {
         this.serializationService = serializationService;
         this.messageBroker = messageBroker;
     }

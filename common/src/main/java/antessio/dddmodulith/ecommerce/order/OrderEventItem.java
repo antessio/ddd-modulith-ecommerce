@@ -3,42 +3,35 @@ package antessio.dddmodulith.ecommerce.order;
 
 
 public final class OrderEventItem {
-    private final String productId;
-    private final Long priceAmountUnit;
-    private final String description;
+    private  String productId;
+    private  Long priceAmountUnit;
+    private  String description;
+    private  Integer quantity;
 
-    private OrderEventItem(String productId, Long priceAmountUnit, String description) {
+    public OrderEventItem() {
+    }
+
+    public OrderEventItem(String productId, Long priceAmountUnit, String description, Integer quantity) {
         this.productId = productId;
         this.priceAmountUnit = priceAmountUnit;
         this.description = description;
-    }
-
-    public static OrderEventItem of(String productId, Long priceAmountUnit, String description) {
-        return new OrderEventItem(productId, priceAmountUnit, description);
+        this.quantity = quantity;
     }
 
     public String getProductId() {
-        return this.productId;
+        return productId;
     }
 
     public Long getPriceAmountUnit() {
-        return this.priceAmountUnit;
+        return priceAmountUnit;
     }
 
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
-    public OrderEventItem withProductId(String productId) {
-        return of(productId, getPriceAmountUnit(), getDescription());
-    }
-
-    public OrderEventItem withPriceAmountUnit(Long priceAmountUnit) {
-        return of(getProductId(), priceAmountUnit, getDescription());
-    }
-
-    public OrderEventItem withDescription(String description) {
-        return of(getProductId(), getPriceAmountUnit(), description);
+    public Integer getQuantity() {
+        return quantity;
     }
 
 }

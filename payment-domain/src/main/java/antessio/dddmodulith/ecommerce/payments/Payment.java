@@ -2,13 +2,13 @@ package antessio.dddmodulith.ecommerce.payments;
 
 import java.util.UUID;
 
-final class Payment {
+public class Payment {
 
-    private final String id;
-    private final String status;
-    private final String accountId;
-    private final Long amountUnit;
-    private final String orderId;
+    private  String id;
+    private  String status;
+    private  String accountId;
+    private  Long amountUnit;
+    private  String orderId;
 
     private Payment(String status, String accountId, Long amountUnit, String orderId) {
         this.id = UUID.randomUUID().toString();
@@ -17,9 +17,23 @@ final class Payment {
         this.amountUnit = amountUnit;
         this.orderId = orderId;
     }
+    private Payment(String id, String status, String accountId, Long amountUnit, String orderId) {
+        this.id = id;
+        this.status = status;
+        this.accountId = accountId;
+        this.amountUnit = amountUnit;
+        this.orderId = orderId;
+    }
 
-    public static Payment of(String status, String accountId, Long amountUnit, String orderId) {
+    public Payment() {
+        
+    }
+
+    static Payment of(String status, String accountId, Long amountUnit, String orderId) {
         return new Payment(status, accountId, amountUnit, orderId);
+    }
+    private static Payment of(String id, String status, String accountId, Long amountUnit, String orderId) {
+        return new Payment(id, status, accountId, amountUnit, orderId);
     }
 
     public String getId() {
@@ -43,19 +57,19 @@ final class Payment {
     }
 
     public Payment withStatus(String status) {
-        return of(status, getAccountId(), getAmountUnit(), getOrderId());
+        return of(getId(), status, getAccountId(), getAmountUnit(), getOrderId());
     }
 
     public Payment withAccountId(String accountId) {
-        return of(getStatus(), accountId, getAmountUnit(), getOrderId());
+        return of(getId(), getStatus(), accountId, getAmountUnit(), getOrderId());
     }
 
     public Payment withAmountUnit(Long amountUnit) {
-        return of(getStatus(), getAccountId(), amountUnit, getOrderId());
+        return of(getId(), getStatus(), getAccountId(), amountUnit, getOrderId());
     }
 
     public Payment withOrderId(String orderId) {
-        return of(getStatus(), getAccountId(), getAmountUnit(), orderId);
+        return of(getId(), getStatus(), getAccountId(), getAmountUnit(), orderId);
     }
 
 }
