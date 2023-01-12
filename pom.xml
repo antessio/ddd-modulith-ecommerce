@@ -12,6 +12,8 @@
 
     <properties>
         <junit-jupiter.version>5.6.0</junit-jupiter.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
     <dependencies>
         <dependency>
@@ -45,7 +47,7 @@
         <module>shipping-domain</module>
         <module>payment-domain</module>
         <module>application</module>
+        <module>common</module>
     </modules>
-
 
 </project>
