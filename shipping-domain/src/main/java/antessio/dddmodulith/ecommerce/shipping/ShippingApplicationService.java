@@ -2,10 +2,8 @@ package antessio.dddmodulith.ecommerce.shipping;
 
 import antessio.dddmodulith.ecommerce.common.MessageBroker;
 import antessio.dddmodulith.ecommerce.common.SerializationService;
-import antessio.dddmodulith.ecommerce.common.Subscriber;
-import antessio.dddmodulith.ecommerce.order.OrderEvent;
 
-public class ShippingApplicationService implements ShippingServiceInterface {
+public class ShippingApplicationService implements ShippingServiceInterface, OnOrderCreated {
 
     private ShippingService shippingService;
 
@@ -18,11 +16,7 @@ public class ShippingApplicationService implements ShippingServiceInterface {
                 messageBroker,
                 repository);
 
-        messageBroker.subscribe(Subscriber.of(this.getClass().getCanonicalName(),
-                                              "order-created", orderCreatedRaw -> {
-                    OrderEvent orderCreatedEvent = serializationService.deserialize(orderCreatedRaw, OrderEvent.class);
-                    this.onOrderCreated(orderCreatedEvent);
-                }));
+
     }
 
     @Override
@@ -48,12 +42,15 @@ public class ShippingApplicationService implements ShippingServiceInterface {
 
     }
 
-    private void onOrderCreated(OrderEvent orderCreatedEvent) {
+
+
+    @Override
+    public void createShipping(CreateShippingCommand command) {
         Shipping shipping = Shipping.of(
-                orderCreatedEvent.getId(),
-                "courier-1",
+                command.getOrderId(),
+                command.getCourier(),
                 "preparing",
-                orderCreatedEvent.getShippingAddress()
+                command.getShippingAddress()
         );
         this.shippingService.create(shipping);
     }

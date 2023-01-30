@@ -4,37 +4,19 @@ import java.util.stream.Collectors;
 
 import antessio.dddmodulith.ecommerce.common.MessageBroker;
 import antessio.dddmodulith.ecommerce.common.SerializationService;
-import antessio.dddmodulith.ecommerce.common.Subscriber;
-import antessio.dddmodulith.ecommerce.shipping.ShippingEvent;
 
-public class OrderApplicationService implements OrderServiceInterface {
+public class OrderApplicationService implements OrderServiceInterface, OnShippingUpdated {
 
 
     private final OrderService orderService;
 
-    public OrderApplicationService(SerializationService serializationService, MessageBroker messageBroker, OrderRepository orderRepository) {
+    public OrderApplicationService(SerializationService serializationService,
+                                   MessageBroker messageBroker,
+                                   OrderRepository orderRepository) {
         this.orderService = new OrderService(serializationService, messageBroker, orderRepository);
-        messageBroker.subscribe(Subscriber.of(this.getClass().getCanonicalName(), "shipping-preparing", shippingRawEvent -> {
-            ShippingEvent shippingEvent = serializationService.deserialize(shippingRawEvent, ShippingEvent.class);
-            this.onShippingEvent(shippingEvent);
-        }));
-        messageBroker.subscribe(Subscriber.of(this.getClass().getCanonicalName(), "shipping-in-delivery", shippingRawEvent -> {
-            ShippingEvent shippingEvent = serializationService.deserialize(shippingRawEvent, ShippingEvent.class);
-            this.onShippingEvent(shippingEvent);
-        }));
-
-        messageBroker.subscribe(Subscriber.of(this.getClass().getCanonicalName(), "shipping-delivered", shippingRawEvent -> {
-            ShippingEvent shippingEvent = serializationService.deserialize(shippingRawEvent, ShippingEvent.class);
-            this.onShippingEvent(shippingEvent);
-        }));
     }
 
-    private void onShippingEvent(ShippingEvent shippingEvent) {
-        orderService.updateShippingInfo(
-                shippingEvent.getOrderId(),
-                shippingEvent.getShippingId(),
-                shippingEvent.getStatus());
-    }
+
 
     @Override
     public String createOrder(CreateOrderCommand command) {
@@ -65,6 +47,14 @@ public class OrderApplicationService implements OrderServiceInterface {
                                         o.getUsername()
                                 ))
                                 .orElseThrow(() -> new IllegalArgumentException("order not found"));
+    }
+
+    @Override
+    public void updateShippingInfo(UpdateShippingInfoCommand command) {
+        orderService.updateShippingInfo(
+                command.getOrderId(),
+                command.getShippingId(),
+                command.getShippingStatus());
     }
 
 }

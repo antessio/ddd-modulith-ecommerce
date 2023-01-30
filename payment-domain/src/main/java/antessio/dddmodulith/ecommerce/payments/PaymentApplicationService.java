@@ -2,8 +2,6 @@ package antessio.dddmodulith.ecommerce.payments;
 
 import antessio.dddmodulith.ecommerce.common.MessageBroker;
 import antessio.dddmodulith.ecommerce.common.SerializationService;
-import antessio.dddmodulith.ecommerce.common.Subscriber;
-import antessio.dddmodulith.ecommerce.order.OrderEvent;
 import antessio.dddmodulith.ecommerce.payment.PaymentServiceInterface;
 
 public class PaymentApplicationService implements PaymentServiceInterface, OnOrderCompleted, OnOrderFailed {

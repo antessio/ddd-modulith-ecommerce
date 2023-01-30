@@ -19,12 +19,8 @@ import antessio.dddmodulith.ecommerce.shipping.ShippingApplicationService;
 public class ModuleConfiguration {
 
     @Bean
-    public NotificationApplicationService notificationApplicationService(
-            ObjectMapperSerializationService objectMapperSerializationService,
-            SimpleMessageBroker simpleMessageBroker) {
-        return new NotificationApplicationService(
-                objectMapperSerializationService,
-                simpleMessageBroker);
+    public NotificationApplicationService notificationApplicationService() {
+        return new NotificationApplicationService();
     }
 
     @Bean

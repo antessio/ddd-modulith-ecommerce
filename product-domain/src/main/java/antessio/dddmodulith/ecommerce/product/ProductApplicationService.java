@@ -12,7 +12,7 @@ import antessio.dddmodulith.ecommerce.common.Subscriber;
 import antessio.dddmodulith.ecommerce.order.OrderEvent;
 import antessio.dddmodulith.ecommerce.order.OrderEventItem;
 
-public class ProductApplicationService implements ProductServiceInterface {
+public class ProductApplicationService implements ProductServiceInterface, OnOrderCreated {
 
     private final ProductService productService;
 
@@ -26,22 +26,9 @@ public class ProductApplicationService implements ProductServiceInterface {
                 messageBroker,
                 repository
         );
-        messageBroker.subscribe(
-                Subscriber.of(this.getClass().getCanonicalName(),
-                              "order-created", orderCreatedRaw -> {
-                            OrderEvent orderCreatedEvent = serializationService.deserialize(orderCreatedRaw, OrderEvent.class);
-                            this.onOrderCreated(orderCreatedEvent);
-                        }));
+
     }
 
-    private void onOrderCreated(OrderEvent orderCreatedEvent) {
-        Map<String, OrderEventItem> productsInOrder = orderCreatedEvent.getItems()
-                                                                       .stream()
-                                                                       .collect(Collectors.toMap(OrderEventItem::getProductId, o -> o));
-        productService.loadByProductIds(new ArrayList<>(productsInOrder.keySet()))
-                      .forEach(p -> Optional.ofNullable(productsInOrder.get(p.getProductId()))
-                                            .ifPresent(i -> productService.updateStocks(p, i.getQuantity())));
-    }
 
     @Override
     public List<ProductDTO> getProducts() {
@@ -66,6 +53,13 @@ public class ProductApplicationService implements ProductServiceInterface {
                 null,
                 createProductCommand.getImages()
         ));
+    }
+
+    @Override
+    public void updateStocks(UpdateStocksCommand updateStocksCommand) {
+        productService.loadByProductIds(new ArrayList<>(updateStocksCommand.getProductIdQuantity().keySet()))
+                      .forEach(p -> Optional.ofNullable(updateStocksCommand.getProductIdQuantity().get(p.getProductId()))
+                                            .ifPresent(i -> productService.updateStocks(p, i)));
     }
 
 }
